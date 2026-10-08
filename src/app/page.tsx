@@ -13,30 +13,30 @@ export default function Home() {
       
       <main className="flex-1">
         {/* HERO SECTION */}
-        <section className="relative py-20 lg:py-32 overflow-hidden">
+        <section className="relative py-12 md:py-20 lg:py-32 overflow-hidden">
           <div className="absolute inset-0 bg-white/10 backdrop-blur-3xl -z-10"></div>
-          <div className="container mx-auto px-4 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center relative z-10">
-            <div className="space-y-8 text-center lg:text-left">
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-foreground">
+          <div className="container mx-auto px-4 grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 items-center relative z-10">
+            <div className="space-y-6 md:space-y-8 text-center lg:text-left">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-foreground leading-tight">
                 Learn Banglay IELTS
               </h1>
-              <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto lg:mx-0">
+              <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto lg:mx-0">
                 Master IELTS with structured lessons, private video classes, and downloadable study materials.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                <Link href="/login">
-                  <Button size="lg" className="w-full sm:w-auto font-semibold">LOGIN TO COURSE</Button>
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center lg:justify-start pt-2">
+                <Link href="/login" className="w-full sm:w-auto">
+                  <Button size="lg" className="w-full sm:w-auto font-semibold h-12 text-base">LOGIN TO COURSE</Button>
                 </Link>
-                <Link href="/register">
-                  <Button size="lg" variant="outline" className="w-full sm:w-auto font-semibold">JOIN COURSE</Button>
+                <Link href="/register" className="w-full sm:w-auto">
+                  <Button size="lg" variant="outline" className="w-full sm:w-auto font-semibold h-12 text-base">JOIN COURSE</Button>
                 </Link>
               </div>
             </div>
-            <div className="relative aspect-square max-w-md mx-auto lg:max-w-none w-full hidden sm:block">
+            <div className="relative aspect-square max-w-[280px] sm:max-w-md mx-auto lg:max-w-none w-full">
               <div className="absolute inset-0 bg-primary/20 rounded-full blur-3xl opacity-30"></div>
               {/* Using a placeholder container for illustration */}
-              <div className="relative h-full w-full bg-white/30 backdrop-blur-xl rounded-[2.5rem] border border-white/60 flex items-center justify-center shadow-2xl shadow-red-900/10 overflow-hidden ring-1 ring-white/50">
-                <GraduationCap className="h-48 w-48 text-primary/60 drop-shadow-xl" />
+              <div className="relative h-full w-full bg-white/30 backdrop-blur-xl rounded-[2rem] sm:rounded-[2.5rem] border border-white/60 flex items-center justify-center shadow-2xl shadow-red-900/10 overflow-hidden ring-1 ring-white/50">
+                <GraduationCap className="h-32 w-32 sm:h-48 sm:w-48 text-primary/60 drop-shadow-xl" />
                 <div className="absolute inset-0 bg-gradient-to-tr from-white/40 via-transparent to-white/10 pointer-events-none"></div>
               </div>
             </div>
@@ -44,7 +44,7 @@ export default function Home() {
         </section>
 
         {/* COURSE SECTION */}
-        <section id="modules" className="py-20 relative">
+        <section id="modules" className="py-12 md:py-20 relative">
           <div className="container mx-auto px-4 relative z-10">
             <div className="text-center max-w-3xl mx-auto mb-16">
               <h2 className="text-3xl md:text-4xl font-bold mb-4 text-foreground">Complete IELTS Preparation Course</h2>
@@ -142,7 +142,7 @@ export default function Home() {
         </section>
 
         {/* FEATURES SECTION */}
-        <section id="features" className="py-20 relative">
+        <section id="features" className="py-12 md:py-20 relative">
           <div className="absolute inset-0 bg-white/20 backdrop-blur-3xl -z-10"></div>
           <div className="container mx-auto px-4 relative z-10">
             <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-foreground">Platform Features</h2>
@@ -170,9 +170,9 @@ export default function Home() {
         </section>
 
         {/* ABOUT SECTION */}
-        <section id="about" className="py-20 relative">
+        <section id="about" className="py-12 md:py-20 relative">
           <div className="container mx-auto px-4 text-center max-w-4xl relative z-10">
-            <Card className="p-8 md:p-12">
+            <Card className="p-6 sm:p-8 md:p-12">
               <h2 className="text-3xl md:text-4xl font-bold mb-6">About Learn Banglay IELTS</h2>
               <p className="text-lg text-foreground/80 mb-8 leading-relaxed font-medium">
                 <strong>Learn Banglay IELTS</strong> provides structured IELTS learning resources designed to help students prepare for Listening, Reading, Writing, and Speaking. We believe that with the right guidance, high-quality materials, and a clear study plan, achieving your dream band score is entirely possible.
@@ -185,7 +185,7 @@ export default function Home() {
         </section>
 
         {/* CTA SECTION */}
-        <section className="py-24 relative text-center text-white overflow-hidden shadow-inner">
+        <section className="py-16 md:py-24 relative text-center text-white overflow-hidden shadow-inner">
           <div className="absolute inset-0 bg-gradient-to-br from-red-600/90 to-red-800/90 backdrop-blur-xl -z-10"></div>
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-white/20 via-transparent to-transparent -z-10"></div>
           <div className="container mx-auto px-4 max-w-3xl relative z-10">

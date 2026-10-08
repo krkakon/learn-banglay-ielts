@@ -62,26 +62,28 @@ export function Header() {
 
       {/* Mobile Navigation */}
       {isMobileMenuOpen && (
-        <div className="md:hidden border-b bg-background">
+        <div className="md:hidden absolute top-16 left-0 right-0 border-b bg-white/95 backdrop-blur-xl shadow-lg max-h-[calc(100vh-4rem)] overflow-y-auto">
           <div className="container mx-auto px-4 py-4 flex flex-col space-y-4">
             {navigation.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
-                className="text-sm font-medium text-foreground/60 hover:text-primary"
+                className={`text-base font-medium transition-colors hover:text-primary ${
+                  pathname === item.href ? "text-foreground font-semibold" : "text-foreground/70"
+                }`}
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 {item.name}
               </Link>
             ))}
-            <div className="flex flex-col space-y-2 pt-4 border-t">
+            <div className="flex flex-col space-y-3 pt-4 border-t border-muted">
               <Link href="/login" onClick={() => setIsMobileMenuOpen(false)}>
-                <Button variant="outline" className="w-full justify-center">
+                <Button variant="outline" className="w-full justify-center text-base h-12">
                   LOGIN
                 </Button>
               </Link>
               <Link href="/register" onClick={() => setIsMobileMenuOpen(false)}>
-                <Button className="w-full justify-center">
+                <Button className="w-full justify-center text-base h-12">
                   REGISTER / JOIN COURSE
                 </Button>
               </Link>
