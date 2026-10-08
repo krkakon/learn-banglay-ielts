@@ -1,6 +1,6 @@
 import { jwtVerify, SignJWT } from "jose";
 import { cookies } from "next/headers";
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 const secretKey = process.env.JWT_SECRET || "learn-banglay-ielts-super-secret-key-for-development";
 const encodedKey = new TextEncoder().encode(secretKey);
@@ -65,14 +65,15 @@ export async function updateSession(request: NextRequest) {
   // Refresh the session so it doesn't expire
   const parsed = await decrypt(session);
   if (!parsed) return;
-  parsed.expires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+  
+  const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
   
   const res = NextResponse.next();
   res.cookies.set({
     name: "session",
     value: await encrypt(parsed),
     httpOnly: true,
-    expires: parsed.expires,
+    expires: expiresAt,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
     path: "/",
