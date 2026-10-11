@@ -252,15 +252,17 @@ export function VideoPlayer({ url, title, poster }: VideoPlayerProps) {
             </button>
           </div>
 
-          {/* Fullscreen Video Body */}
-          <div className="flex-1 w-full h-full relative bg-black">
-            <iframe
-              src={embedUrl}
-              title={title || "IELTS Course Video"}
-              className="w-full h-full border-0 absolute inset-0 block"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
-              allowFullScreen
-            />
+          {/* Fullscreen Video Body (Locked to 16:9 so Google Drive does not render oversized vertical controls) */}
+          <div className="flex-1 w-full flex items-center justify-center p-0 sm:p-4 bg-black overflow-hidden">
+            <div className="w-full max-w-5xl aspect-video relative bg-black shadow-2xl">
+              <iframe
+                src={embedUrl}
+                title={title || "IELTS Course Video"}
+                className="w-full h-full border-0 absolute inset-0 block"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
+                allowFullScreen
+              />
+            </div>
           </div>
         </div>
       )}
