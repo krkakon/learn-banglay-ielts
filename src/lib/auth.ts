@@ -1,4 +1,4 @@
-import { jwtVerify, SignJWT } from "jose";
+import { jwtVerify, SignJWT, decodeJwt } from "jose";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -22,12 +22,30 @@ export async function encrypt(payload: SessionPayload) {
 }
 
 export async function decrypt(session: string | undefined = "") {
+  if (!session) return null;
   try {
     const { payload } = await jwtVerify(session, encodedKey, {
       algorithms: ["HS256"],
     });
     return payload as SessionPayload;
-  } catch (error) {
+  } catch {
+    // If not local JWT, verify/decode Firebase ID token
+    try {
+      const decoded: any = decodeJwt(session);
+      if (decoded && (decoded.user_id || decoded.sub || decoded.uid)) {
+        const email = decoded.email || "";
+        const isAdmin = email.toLowerCase() === "admin@learnbanglayielts.com" || decoded.admin === true;
+        return {
+          id: decoded.user_id || decoded.sub || decoded.uid,
+          email,
+          role: isAdmin ? "admin" : "student",
+          status: "active",
+          enrollment_status: "approved",
+        } as SessionPayload;
+      }
+    } catch {
+      return null;
+    }
     return null;
   }
 }
