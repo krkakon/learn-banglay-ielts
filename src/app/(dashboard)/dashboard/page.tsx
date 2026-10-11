@@ -9,12 +9,12 @@ export default async function DashboardPage() {
   const sessionCookie = (await cookies()).get("session")?.value;
   const session = await decrypt(sessionCookie);
 
-  // Mock progress data
+  // Progress data (reset to 0 so admin can add new lessons)
   const progressData = {
-    listening: { total: 20, completed: 5, percentage: 25 },
-    reading: { total: 18, completed: 10, percentage: 55 },
-    writing: { total: 15, completed: 0, percentage: 0 },
-    speaking: { total: 12, completed: 12, percentage: 100 },
+    listening: { total: 0, completed: 0, percentage: 0 },
+    reading: { total: 0, completed: 0, percentage: 0 },
+    writing: { total: 0, completed: 0, percentage: 0 },
+    speaking: { total: 0, completed: 0, percentage: 0 },
   };
 
   const modules = [

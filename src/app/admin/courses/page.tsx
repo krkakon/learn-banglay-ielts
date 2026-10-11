@@ -24,39 +24,17 @@ export default function AdminCoursesPage() {
   const [selectedModule, setSelectedModule] = useState("listening");
 
   const modules = [
-    { id: "listening", name: "IELTS Listening", icon: Headphones, color: "text-blue-500", bg: "bg-blue-50", count: 8 },
-    { id: "reading", name: "IELTS Reading", icon: BookOpen, color: "text-green-500", bg: "bg-green-50", count: 8 },
-    { id: "writing", name: "IELTS Writing", icon: PenTool, color: "text-purple-500", bg: "bg-purple-50", count: 8 },
-    { id: "speaking", name: "IELTS Speaking", icon: Mic, color: "text-orange-500", bg: "bg-orange-50", count: 8 },
+    { id: "listening", name: "IELTS Listening", icon: Headphones, color: "text-blue-500", bg: "bg-blue-50", count: 0 },
+    { id: "reading", name: "IELTS Reading", icon: BookOpen, color: "text-green-500", bg: "bg-green-50", count: 0 },
+    { id: "writing", name: "IELTS Writing", icon: PenTool, color: "text-purple-500", bg: "bg-purple-50", count: 0 },
+    { id: "speaking", name: "IELTS Speaking", icon: Mic, color: "text-orange-500", bg: "bg-orange-50", count: 0 },
   ];
 
   const lessons: Record<string, Array<{ id: string; title: string; duration: string; status: string; video: string }>> = {
-    listening: [
-      { id: "l-01", title: "Introduction to IELTS Listening", duration: "12:30", status: "Published", video: "https://www.w3schools.com/html/mov_bbb.mp4" },
-      { id: "l-02", title: "Listening Question Types", duration: "15:45", status: "Published", video: "https://www.w3schools.com/html/mov_bbb.mp4" },
-      { id: "l-03", title: "Form Completion Strategies", duration: "18:20", status: "Published", video: "https://www.w3schools.com/html/mov_bbb.mp4" },
-      { id: "l-04", title: "Multiple Choice Mastery", duration: "20:10", status: "Published", video: "https://www.w3schools.com/html/mov_bbb.mp4" },
-      { id: "l-05", title: "Map & Diagram Labeling", duration: "22:15", status: "Published", video: "https://www.w3schools.com/html/mov_bbb.mp4" },
-      { id: "l-06", title: "Sentence & Note Completion", duration: "14:50", status: "Published", video: "https://www.w3schools.com/html/mov_bbb.mp4" },
-      { id: "l-07", title: "Matching Questions Breakdown", duration: "19:05", status: "Published", video: "https://www.w3schools.com/html/mov_bbb.mp4" },
-      { id: "l-08", title: "Full Listening Practice Test", duration: "35:00", status: "Published", video: "https://www.w3schools.com/html/mov_bbb.mp4" },
-    ],
-    reading: [
-      { id: "r-01", title: "Skimming and Scanning Techniques", duration: "16:00", status: "Published", video: "https://www.w3schools.com/html/mov_bbb.mp4" },
-      { id: "r-02", title: "True, False, Not Given Mastery", duration: "21:30", status: "Published", video: "https://www.w3schools.com/html/mov_bbb.mp4" },
-      { id: "r-03", title: "Heading Matching Questions", duration: "18:45", status: "Published", video: "https://www.w3schools.com/html/mov_bbb.mp4" },
-      { id: "r-04", title: "Summary Completion", duration: "15:10", status: "Published", video: "https://www.w3schools.com/html/mov_bbb.mp4" },
-    ],
-    writing: [
-      { id: "w-01", title: "Task 1: Academic Report Writing", duration: "25:00", status: "Published", video: "https://www.w3schools.com/html/mov_bbb.mp4" },
-      { id: "w-02", title: "Task 2: Essay Structures & Ideas", duration: "30:15", status: "Published", video: "https://www.w3schools.com/html/mov_bbb.mp4" },
-      { id: "w-03", title: "Band 9 Vocabulary & Cohesion", duration: "22:40", status: "Published", video: "https://www.w3schools.com/html/mov_bbb.mp4" },
-    ],
-    speaking: [
-      { id: "s-01", title: "Speaking Part 1: Fluency & Confidence", duration: "14:20", status: "Published", video: "https://www.w3schools.com/html/mov_bbb.mp4" },
-      { id: "s-02", title: "Speaking Part 2: Cue Card 2-Min Talk", duration: "24:10", status: "Published", video: "https://www.w3schools.com/html/mov_bbb.mp4" },
-      { id: "s-03", title: "Speaking Part 3: Abstract Discussion", duration: "19:50", status: "Published", video: "https://www.w3schools.com/html/mov_bbb.mp4" },
-    ],
+    listening: [],
+    reading: [],
+    writing: [],
+    speaking: [],
   };
 
   const currentLessons = lessons[selectedModule] || [];
@@ -115,19 +93,31 @@ export default function AdminCoursesPage() {
           </span>
         </CardHeader>
         <CardContent className="p-0">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm text-left">
-              <thead className="text-xs text-slate-500 uppercase bg-slate-50 border-b">
-                <tr>
-                  <th className="px-5 py-3">Order</th>
-                  <th className="px-5 py-3">Lesson Title</th>
-                  <th className="px-5 py-3">Duration</th>
-                  <th className="px-5 py-3">Status</th>
-                  <th className="px-5 py-3 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {currentLessons.map((lesson, idx) => (
+          {currentLessons.length === 0 ? (
+            <div className="p-12 text-center text-slate-500">
+              <Video className="h-12 w-12 mx-auto text-slate-300 mb-3" />
+              <h3 className="text-base font-semibold text-slate-800">No lessons added yet</h3>
+              <p className="text-sm text-slate-500 max-w-sm mx-auto mt-1">
+                You haven&apos;t added any video lessons to this module yet. Click the button below to add your first lesson.
+              </p>
+              <Button className="mt-4 bg-primary hover:bg-primary/90 text-white font-medium" size="sm">
+                <Plus className="mr-2 h-4 w-4" /> Add First Lesson
+              </Button>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm text-left">
+                <thead className="text-xs text-slate-500 uppercase bg-slate-50 border-b">
+                  <tr>
+                    <th className="px-5 py-3">Order</th>
+                    <th className="px-5 py-3">Lesson Title</th>
+                    <th className="px-5 py-3">Duration</th>
+                    <th className="px-5 py-3">Status</th>
+                    <th className="px-5 py-3 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {currentLessons.map((lesson, idx) => (
                   <tr key={lesson.id} className="hover:bg-slate-50/80 transition-colors">
                     <td className="px-5 py-4 font-mono text-xs text-slate-400">
                       #{idx + 1}
@@ -171,6 +161,7 @@ export default function AdminCoursesPage() {
               </tbody>
             </table>
           </div>
+        )}
         </CardContent>
       </Card>
     </div>

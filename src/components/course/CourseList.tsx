@@ -26,34 +26,44 @@ export function CourseList({ title, description, lessons }: CourseListProps) {
       </div>
 
       <div className="space-y-4">
-        {lessons.map((lesson, index) => (
-          <Card key={lesson.id} className={`transition-colors ${lesson.completed ? "bg-muted/50" : "hover:border-primary/50"}`}>
-            <CardContent className="p-4 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-              <div className="flex items-start sm:items-center gap-4">
-                <div className="mt-1 sm:mt-0">
-                  {lesson.completed ? (
-                    <CheckCircle2 className="h-6 w-6 text-green-500" />
-                  ) : (
-                    <Circle className="h-6 w-6 text-muted-foreground" />
-                  )}
-                </div>
-                <div>
-                  <div className="text-sm text-muted-foreground font-medium mb-1">Lesson {String(lesson.order).padStart(2, '0')}</div>
-                  <h3 className="text-lg font-semibold">{lesson.title}</h3>
-                  <div className="text-sm text-muted-foreground mt-1 flex items-center">
-                    <PlayCircle className="h-4 w-4 mr-1" /> {lesson.duration}
+        {lessons.length === 0 ? (
+          <Card className="border-dashed p-12 text-center text-muted-foreground">
+            <PlayCircle className="h-12 w-12 mx-auto text-muted-foreground/30 mb-3" />
+            <h3 className="text-lg font-semibold text-foreground">No lessons available yet</h3>
+            <p className="text-sm mt-1 max-w-sm mx-auto">
+              New video lessons are being prepared. Check back soon or contact your course instructor!
+            </p>
+          </Card>
+        ) : (
+          lessons.map((lesson, index) => (
+            <Card key={lesson.id} className={`transition-colors ${lesson.completed ? "bg-muted/50" : "hover:border-primary/50"}`}>
+              <CardContent className="p-4 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div className="flex items-start sm:items-center gap-4">
+                  <div className="mt-1 sm:mt-0">
+                    {lesson.completed ? (
+                      <CheckCircle2 className="h-6 w-6 text-green-500" />
+                    ) : (
+                      <Circle className="h-6 w-6 text-muted-foreground" />
+                    )}
+                  </div>
+                  <div>
+                    <div className="text-sm text-muted-foreground font-medium mb-1">Lesson {String(lesson.order).padStart(2, '0')}</div>
+                    <h3 className="text-lg font-semibold">{lesson.title}</h3>
+                    <div className="text-sm text-muted-foreground mt-1 flex items-center">
+                      <PlayCircle className="h-4 w-4 mr-1" /> {lesson.duration}
+                    </div>
                   </div>
                 </div>
-              </div>
-              
-              <Link href={`/lesson/${lesson.id}`} className="w-full sm:w-auto">
-                <Button variant={lesson.completed ? "outline" : "default"} className="w-full">
-                  {lesson.completed ? "Watch Again" : "Watch Lesson"}
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
-        ))}
+                
+                <Link href={`/lesson/${lesson.id}`} className="w-full sm:w-auto">
+                  <Button variant={lesson.completed ? "outline" : "default"} className="w-full">
+                    {lesson.completed ? "Watch Again" : "Watch Lesson"}
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
+          ))
+        )}
       </div>
     </div>
   );

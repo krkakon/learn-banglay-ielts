@@ -16,14 +16,7 @@ import {
 import Link from "next/link";
 
 export default function AdminPdfsPage() {
-  const [pdfs, setPdfs] = useState([
-    { id: "pdf-01", title: "Complete IELTS Vocabulary Guide (Band 8+)", size: "4.2 MB", module: "Vocabulary", status: "Published", downloads: 142 },
-    { id: "pdf-02", title: "IELTS Academic Writing Task 1 Templates", size: "2.8 MB", module: "Writing", status: "Published", downloads: 98 },
-    { id: "pdf-03", title: "100 High-Scoring Essay Samples for Task 2", size: "6.5 MB", module: "Writing", status: "Published", downloads: 185 },
-    { id: "pdf-04", title: "Speaking Cue Cards 2026 Collection", size: "3.1 MB", module: "Speaking", status: "Published", downloads: 120 },
-    { id: "pdf-05", title: "Reading Skimming & Scanning Practice Sheets", size: "5.0 MB", module: "Reading", status: "Published", downloads: 74 },
-    { id: "pdf-06", title: "Listening Common Traps & Spelling List", size: "1.9 MB", module: "Listening", status: "Published", downloads: 110 },
-  ]);
+  const [pdfs, setPdfs] = useState<Array<{ id: string; title: string; size: string; module: string; status: string; downloads: number }>>([]);
 
   return (
     <div className="space-y-6">
@@ -54,7 +47,7 @@ export default function AdminPdfsPage() {
           <CardContent className="p-4 flex items-center justify-between">
             <div>
               <p className="text-xs font-medium text-slate-500">Total Student Downloads</p>
-              <h3 className="text-2xl font-bold text-blue-600 mt-1">729</h3>
+              <h3 className="text-2xl font-bold text-blue-600 mt-1">0</h3>
             </div>
             <div className="p-3 bg-blue-50 text-blue-600 rounded-xl">
               <Download className="h-5 w-5" />
@@ -66,7 +59,7 @@ export default function AdminPdfsPage() {
           <CardContent className="p-4 flex items-center justify-between">
             <div>
               <p className="text-xs font-medium text-slate-500">Storage Used</p>
-              <h3 className="text-2xl font-bold text-slate-900 mt-1">23.5 MB</h3>
+              <h3 className="text-2xl font-bold text-slate-900 mt-1">0 MB</h3>
             </div>
             <div className="p-3 bg-purple-50 text-purple-600 rounded-xl">
               <HardDrive className="h-5 w-5" />
@@ -88,17 +81,29 @@ export default function AdminPdfsPage() {
           </Link>
         </CardHeader>
         <CardContent className="p-0">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm text-left">
-              <thead className="text-xs text-slate-500 uppercase bg-slate-50 border-b">
-                <tr>
-                  <th className="px-5 py-3">Document Title</th>
-                  <th className="px-5 py-3">Module</th>
-                  <th className="px-5 py-3">File Size</th>
-                  <th className="px-5 py-3">Status</th>
-                  <th className="px-5 py-3 text-right">Actions</th>
-                </tr>
-              </thead>
+          {pdfs.length === 0 ? (
+            <div className="p-12 text-center text-slate-500">
+              <FileText className="h-12 w-12 mx-auto text-slate-300 mb-3" />
+              <h3 className="text-base font-semibold text-slate-800">No PDFs uploaded yet</h3>
+              <p className="text-sm text-slate-500 max-w-sm mx-auto mt-1">
+                You haven&apos;t uploaded any study materials yet. Click the button below to upload your first study guide or test sheet.
+              </p>
+              <Button className="mt-4 bg-primary hover:bg-primary/90 text-white font-medium" size="sm">
+                <Plus className="mr-2 h-4 w-4" /> Upload First PDF
+              </Button>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm text-left">
+                <thead className="text-xs text-slate-500 uppercase bg-slate-50 border-b">
+                  <tr>
+                    <th className="px-5 py-3">Document Title</th>
+                    <th className="px-5 py-3">Module</th>
+                    <th className="px-5 py-3">File Size</th>
+                    <th className="px-5 py-3">Status</th>
+                    <th className="px-5 py-3 text-right">Actions</th>
+                  </tr>
+                </thead>
               <tbody className="divide-y divide-slate-100">
                 {pdfs.map((pdf) => (
                   <tr key={pdf.id} className="hover:bg-slate-50/80 transition-colors">
@@ -147,6 +152,7 @@ export default function AdminPdfsPage() {
               </tbody>
             </table>
           </div>
+        )}
         </CardContent>
       </Card>
     </div>

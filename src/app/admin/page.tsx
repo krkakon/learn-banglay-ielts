@@ -42,9 +42,9 @@ export default async function AdminDashboardPage() {
     { title: "Total Students", value: totalStudents.toString(), icon: Users, color: "text-blue-600" },
     { title: "Active Students", value: activeStudents.toString(), icon: CheckCircle2, color: "text-green-600" },
     { title: "Pending Approvals", value: pendingStudents.toString(), icon: Clock, color: "text-amber-600" },
-    { title: "IELTS Modules", value: "4", icon: BookOpen, color: "text-purple-600" },
-    { title: "Private Lessons", value: "64", icon: Video, color: "text-indigo-600" },
-    { title: "Study PDFs", value: "24", icon: FileText, color: "text-red-600" },
+    { title: "IELTS Modules", value: "0", icon: BookOpen, color: "text-purple-600" },
+    { title: "Private Lessons", value: "0", icon: Video, color: "text-indigo-600" },
+    { title: "Study PDFs", value: "0", icon: FileText, color: "text-red-600" },
   ];
 
   return (
@@ -120,19 +120,19 @@ export default async function AdminDashboardPage() {
             <div className="space-y-4">
               <div className="flex justify-between items-center text-sm py-1 border-b">
                 <span className="text-slate-600 font-medium">🎧 IELTS Listening</span>
-                <span className="font-semibold text-green-600">Active</span>
+                <span className="text-xs font-semibold px-2 py-0.5 bg-slate-100 text-slate-600 rounded-md">0 Lessons</span>
               </div>
               <div className="flex justify-between items-center text-sm py-1 border-b">
                 <span className="text-slate-600 font-medium">📖 IELTS Reading</span>
-                <span className="font-semibold text-green-600">Active</span>
+                <span className="text-xs font-semibold px-2 py-0.5 bg-slate-100 text-slate-600 rounded-md">0 Lessons</span>
               </div>
               <div className="flex justify-between items-center text-sm py-1 border-b">
                 <span className="text-slate-600 font-medium">✍️ IELTS Writing</span>
-                <span className="font-semibold text-green-600">Active</span>
+                <span className="text-xs font-semibold px-2 py-0.5 bg-slate-100 text-slate-600 rounded-md">0 Lessons</span>
               </div>
               <div className="flex justify-between items-center text-sm py-1">
                 <span className="text-slate-600 font-medium">🗣️ IELTS Speaking</span>
-                <span className="font-semibold text-green-600">Active</span>
+                <span className="text-xs font-semibold px-2 py-0.5 bg-slate-100 text-slate-600 rounded-md">0 Lessons</span>
               </div>
             </div>
           </CardContent>
