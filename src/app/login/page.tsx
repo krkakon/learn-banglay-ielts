@@ -12,10 +12,13 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 
 import { Suspense } from "react";
 
+import { useAuth } from "@/context/AuthContext";
+
 function LoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const errorParam = searchParams.get("error");
+  const { login } = useAuth();
   
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -28,29 +31,51 @@ function LoginContent() {
     setError("");
 
     try {
-      const res = await fetch("/api/auth/login", {
+      await login(email, password);
+
+      // Also sync session with backend
+      await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
-      });
+      }).catch(() => {});
 
-      const data = await res.json();
-
-      if (!res.ok) {
-        setError(data.error || "An error occurred during login.");
-        setLoading(false);
-        return;
-      }
-
-      if (data.user.role === "admin") {
+      if (email.toLowerCase().includes("admin")) {
         router.push("/admin");
       } else {
         router.push("/dashboard");
       }
       router.refresh();
-    } catch (err) {
-      setError("An unexpected error occurred. Please try again.");
-      setLoading(false);
+    } catch (err: any) {
+      // Check for Firebase errors or fallback to backend API
+      if (
+        err.code === "auth/user-not-found" || 
+        err.code === "auth/wrong-password" || 
+        err.code === "auth/invalid-credential"
+      ) {
+        setError("Invalid email or password. Please check your credentials.");
+        setLoading(false);
+      } else {
+        // Fallback to backend API
+        try {
+          const res = await fetch("/api/auth/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password }),
+          });
+          const data = await res.json();
+          if (res.ok) {
+            router.push(data.user.role === "admin" ? "/admin" : "/dashboard");
+            router.refresh();
+            return;
+          } else {
+            setError(data.error || "Login failed.");
+          }
+        } catch {
+          setError(err.message || "An unexpected error occurred.");
+        }
+        setLoading(false);
+      }
     }
   };
 

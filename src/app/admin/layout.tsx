@@ -14,6 +14,8 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 
+import { useAuth } from "@/context/AuthContext";
+
 export default function AdminLayout({
   children,
 }: {
@@ -22,6 +24,7 @@ export default function AdminLayout({
   const pathname = usePathname();
   const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { logout } = useAuth();
 
   const navigation = [
     { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
@@ -31,6 +34,9 @@ export default function AdminLayout({
   ];
 
   const handleLogout = async () => {
+    try {
+      await logout();
+    } catch {}
     await fetch("/api/auth/logout", { method: "POST" });
     router.push("/login");
     router.refresh();

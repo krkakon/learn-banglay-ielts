@@ -18,6 +18,8 @@ import {
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 
+import { useAuth } from "@/context/AuthContext";
+
 export default function DashboardLayout({
   children,
 }: {
@@ -26,6 +28,7 @@ export default function DashboardLayout({
   const pathname = usePathname();
   const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { logout } = useAuth();
 
   const navigation = [
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -39,6 +42,9 @@ export default function DashboardLayout({
   ];
 
   const handleLogout = async () => {
+    try {
+      await logout();
+    } catch {}
     await fetch("/api/auth/logout", { method: "POST" });
     router.push("/login");
     router.refresh();

@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { useAuth } from "@/context/AuthContext";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -28,6 +29,8 @@ export default function RegisterPage() {
     setFormData({ ...formData, [e.target.id]: e.target.value });
   };
 
+  const { register } = useAuth();
+
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -41,26 +44,47 @@ export default function RegisterPage() {
     }
 
     try {
-      const res = await fetch("/api/auth/register", {
+      // Create user in Firebase
+      await register(formData.email, formData.password, formData.full_name);
+
+      // Also create record in database
+      await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
-      });
+      }).catch(() => {});
 
-      const data = await res.json();
-
-      if (!res.ok) {
-        setError(data.error || "An error occurred during registration.");
-        setLoading(false);
-        return;
-      }
-
-      setSuccess(data.message);
+      setSuccess("Registration successful! Redirecting to courses...");
       setTimeout(() => {
-        router.push("/login");
-      }, 2000);
-    } catch (err) {
-      setError("An unexpected error occurred. Please try again.");
+        router.push("/dashboard");
+      }, 1500);
+    } catch (err: any) {
+      if (err.code === "auth/email-already-in-use") {
+        setError("An account with this email already exists. Please log in.");
+      } else if (err.code === "auth/weak-password") {
+        setError("Password should be at least 6 characters.");
+      } else {
+        // Fallback to backend API
+        try {
+          const res = await fetch("/api/auth/register", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(formData),
+          });
+          const data = await res.json();
+          if (res.ok) {
+            setSuccess("Registration successful! Redirecting to login...");
+            setTimeout(() => {
+              router.push("/login");
+            }, 1500);
+            return;
+          } else {
+            setError(data.error || "Registration failed.");
+          }
+        } catch {
+          setError(err.message || "An unexpected error occurred.");
+        }
+      }
       setLoading(false);
     }
   };
