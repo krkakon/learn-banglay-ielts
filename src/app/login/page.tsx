@@ -30,10 +30,13 @@ function LoginContent() {
     setLoading(true);
     setError("");
 
-    // 1. Try Firebase Authentication
+    const cleanEmail = email.trim().toLowerCase();
+    const cleanPassword = password.trim();
+
+    // 1. Try Firebase Authentication (non-blocking)
     let firebaseSucceeded = false;
     try {
-      await login(email, password);
+      await login(cleanEmail, cleanPassword);
       firebaseSucceeded = true;
     } catch (fbErr: any) {
       console.log("Firebase login attempt:", fbErr?.code || fbErr?.message);
@@ -44,29 +47,19 @@ function LoginContent() {
       const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email: cleanEmail, password: cleanPassword }),
       });
 
       const data = await res.json();
 
       if (res.ok) {
-        if (data.user?.role === "admin") {
-          router.push("/admin");
-        } else {
-          router.push("/dashboard");
-        }
-        router.refresh();
+        window.location.href = data.user?.role === "admin" ? "/admin" : "/dashboard";
         return;
       }
 
       // If Firebase succeeded but API had an issue
       if (firebaseSucceeded) {
-        if (email.toLowerCase().includes("admin")) {
-          router.push("/admin");
-        } else {
-          router.push("/dashboard");
-        }
-        router.refresh();
+        window.location.href = cleanEmail.includes("admin") ? "/admin" : "/dashboard";
         return;
       }
 
@@ -74,14 +67,19 @@ function LoginContent() {
       setError(data.error || "Invalid email or password. Please try again.");
     } catch {
       if (firebaseSucceeded) {
-        router.push("/dashboard");
-        router.refresh();
+        window.location.href = "/dashboard";
         return;
       }
       setError("An unexpected error occurred during login. Please try again.");
     } finally {
       setLoading(false);
     }
+  };
+
+  const fillDemoStudent = () => {
+    setEmail("student@learnbanglayielts.com");
+    setPassword("student123");
+    setError("");
   };
 
   return (
@@ -127,7 +125,7 @@ function LoginContent() {
                   required
                 />
               </div>
-              <div className="flex items-center space-x-2 pt-2">
+              <div className="flex items-center space-x-2 pt-1">
                 <input type="checkbox" id="remember" className="rounded border-gray-300" />
                 <Label htmlFor="remember" className="text-sm font-normal cursor-pointer">Remember Me</Label>
               </div>
@@ -135,6 +133,18 @@ function LoginContent() {
                 {loading ? "Logging in..." : "LOGIN"}
               </Button>
             </form>
+
+            <div className="mt-4 pt-3 border-t">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="w-full text-xs bg-primary/5 hover:bg-primary/10 border-primary/30 text-primary font-medium"
+                onClick={fillDemoStudent}
+              >
+                ⚡ Autofill Demo Student (student@learnbanglayielts.com)
+              </Button>
+            </div>
           </CardContent>
           <CardFooter className="flex flex-col space-y-4 pt-0">
             <div className="text-center text-sm text-muted-foreground">

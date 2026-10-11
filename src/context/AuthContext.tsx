@@ -39,12 +39,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(currentUser);
       setLoading(false);
 
-      // Sync session cookie with backend for middleware protection
+      // Sync session cookie with backend for middleware protection if logged in with Firebase
       if (currentUser) {
         const token = await currentUser.getIdToken();
         document.cookie = `session=${token}; path=/; max-age=604800; SameSite=Lax;`;
-      } else {
-        document.cookie = "session=; path=/; max-age=0;";
       }
     });
 

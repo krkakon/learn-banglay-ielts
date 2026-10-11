@@ -23,11 +23,14 @@ export default function AdminLoginPage() {
     setLoading(true);
     setError("");
 
+    const cleanEmail = email.trim().toLowerCase();
+    const cleanPassword = password.trim();
+
     try {
       // 1. First try Firebase login
       let firebaseSucceeded = false;
       try {
-        await login(email, password);
+        await login(cleanEmail, cleanPassword);
         firebaseSucceeded = true;
       } catch (fbErr: any) {
         console.log("Firebase login attempt:", fbErr.message);
@@ -37,21 +40,19 @@ export default function AdminLoginPage() {
       const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email: cleanEmail, password: cleanPassword }),
       });
 
       const data = await res.json();
 
       if (res.ok && data.user?.role === "admin") {
-        router.push("/admin");
-        router.refresh();
+        window.location.href = "/admin";
         return;
       }
 
       // If Firebase succeeded and user email is admin
-      if (firebaseSucceeded && email.toLowerCase().includes("admin")) {
-        router.push("/admin");
-        router.refresh();
+      if (firebaseSucceeded && cleanEmail.includes("admin")) {
+        window.location.href = "/admin";
         return;
       }
 
