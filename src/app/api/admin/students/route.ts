@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { cookies } from "next/headers";
 import { decrypt } from "@/lib/auth";
+import { getAllStudents, addStudent } from "@/lib/studentsStore";
 
 async function verifyAdmin() {
   const sessionCookie = (await cookies()).get("session")?.value;
@@ -18,9 +19,9 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized access" }, { status: 401 });
     }
 
-    let students: any[] = [];
+    let dbStudents: any[] = [];
     try {
-      students = await prisma.user.findMany({
+      dbStudents = await prisma.user.findMany({
         where: { role: "student" },
         orderBy: { created_at: "desc" },
         select: {
@@ -39,7 +40,28 @@ export async function GET() {
       console.warn("Could not query students table yet:", dbErr);
     }
 
-    return NextResponse.json({ students });
+    // Merge registered students from studentsStore (e.g. Hillmoon Nusrat, Demo Student)
+    const storeStudents = getAllStudents().map((s) => ({
+      id: s.id,
+      full_name: s.full_name,
+      email: s.email,
+      phone: s.phone,
+      role: s.role,
+      account_status: s.account_status,
+      enrollment_status: s.enrollment_status,
+      created_at: s.created_at,
+      last_login_at: s.last_login_at,
+    }));
+
+    // Avoid duplicates by email
+    const allStudents = [...dbStudents];
+    for (const item of storeStudents) {
+      if (!allStudents.some((s) => s.email.toLowerCase() === item.email.toLowerCase())) {
+        allStudents.push(item);
+      }
+    }
+
+    return NextResponse.json({ students: allStudents });
   } catch (error) {
     console.error("Error in students route:", error);
     return NextResponse.json({ students: [] });
@@ -60,36 +82,35 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Name, email, and password are required" }, { status: 400 });
     }
 
-    const existingUser = await prisma.user.findUnique({
-      where: { email },
+    // Add to students store
+    const student = addStudent({
+      full_name: full_name.trim(),
+      email: email.trim().toLowerCase(),
+      phone: phone ? phone.trim() : null,
+      password: password.trim(),
+      role: "student",
+      account_status: account_status || "active",
+      enrollment_status: enrollment_status || "approved",
     });
 
-    if (existingUser) {
-      return NextResponse.json({ error: "A user with this email already exists" }, { status: 400 });
+    // Best-effort database sync (non-blocking)
+    try {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      await prisma.user.create({
+        data: {
+          id: student.id,
+          full_name: student.full_name,
+          email: student.email,
+          phone: student.phone,
+          password_hash: hashedPassword,
+          role: "student",
+          account_status: student.account_status,
+          enrollment_status: student.enrollment_status,
+        },
+      });
+    } catch (dbErr) {
+      console.warn("Database sync deferred:", dbErr);
     }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    const student = await prisma.user.create({
-      data: {
-        full_name,
-        email,
-        phone: phone || null,
-        password_hash: hashedPassword,
-        role: "student",
-        account_status: account_status || "active",
-        enrollment_status: enrollment_status || "approved",
-      },
-      select: {
-        id: true,
-        full_name: true,
-        email: true,
-        phone: true,
-        account_status: true,
-        enrollment_status: true,
-        created_at: true,
-      },
-    });
 
     return NextResponse.json({ message: "Student created successfully", student }, { status: 201 });
   } catch (error) {

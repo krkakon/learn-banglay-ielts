@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { createSession } from "@/lib/auth";
+import { verifyStudentLogin } from "@/lib/studentsStore";
 
 export async function POST(req: Request) {
   try {
@@ -57,29 +58,25 @@ export async function POST(req: Request) {
       );
     }
 
-    // 2. Guaranteed Demo Student access (for previewing student dashboard)
-    const isDemoStudent =
-      (cleanEmail === "student@learnbanglayielts.com" || 
-       cleanEmail === "student" || 
-       cleanEmail === "student@learnbanglay.com") &&
-      (cleanPassword === "student123" || 
-       cleanPassword.toLowerCase() === "student123" || 
-       cleanPassword === "student" || 
-       cleanPassword === "123456");
-
-    if (isDemoStudent) {
+    // 2. Guaranteed Student access from registered students store (including Hillmoon Nusrat)
+    const verifiedStudent = verifyStudentLogin(cleanEmail, cleanPassword);
+    if (verifiedStudent) {
       await createSession({
-        id: "demo-student-01",
-        email: "student@learnbanglayielts.com",
+        id: verifiedStudent.id,
+        email: verifiedStudent.email,
         role: "student",
-        status: "active",
-        enrollment_status: "approved",
+        status: verifiedStudent.account_status,
+        enrollment_status: verifiedStudent.enrollment_status,
       });
 
       return NextResponse.json(
         { 
           message: "Student login successful", 
-          user: { id: "demo-student-01", name: "Demo Student", role: "student" } 
+          user: { 
+            id: verifiedStudent.id, 
+            name: verifiedStudent.full_name, 
+            role: "student" 
+          } 
         },
         { status: 200 }
       );
