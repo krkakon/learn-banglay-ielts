@@ -27,7 +27,7 @@ export default async function DashboardPage() {
   return (
     <div className="max-w-6xl mx-auto space-y-8">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Welcome back, {session?.email.split('@')[0]}!</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Welcome back, {session?.email ? session.email.split('@')[0] : "Student"}!</h1>
         <p className="text-muted-foreground mt-2">Continue your IELTS preparation and track your progress.</p>
       </div>
 

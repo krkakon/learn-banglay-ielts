@@ -50,6 +50,25 @@ export async function POST(req: Request) {
       );
     }
 
+    // 2. Guaranteed Demo Student access (for previewing student dashboard)
+    if (email.toLowerCase() === "student@learnbanglayielts.com" && password === "student123") {
+      await createSession({
+        id: "demo-student-01",
+        email: "student@learnbanglayielts.com",
+        role: "student",
+        status: "active",
+        enrollment_status: "approved",
+      });
+
+      return NextResponse.json(
+        { 
+          message: "Student login successful", 
+          user: { id: "demo-student-01", name: "Demo Student", role: "student" } 
+        },
+        { status: 200 }
+      );
+    }
+
     let user = null;
     try {
       user = await prisma.user.findUnique({

@@ -30,52 +30,57 @@ function LoginContent() {
     setLoading(true);
     setError("");
 
+    // 1. Try Firebase Authentication
+    let firebaseSucceeded = false;
     try {
       await login(email, password);
+      firebaseSucceeded = true;
+    } catch (fbErr: any) {
+      console.log("Firebase login attempt:", fbErr?.code || fbErr?.message);
+    }
 
-      // Also sync session with backend
-      await fetch("/api/auth/login", {
+    // 2. Authenticate session with backend API
+    try {
+      const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
-      }).catch(() => {});
+      });
 
-      if (email.toLowerCase().includes("admin")) {
-        router.push("/admin");
-      } else {
-        router.push("/dashboard");
-      }
-      router.refresh();
-    } catch (err: any) {
-      // Check for Firebase errors or fallback to backend API
-      if (
-        err.code === "auth/user-not-found" || 
-        err.code === "auth/wrong-password" || 
-        err.code === "auth/invalid-credential"
-      ) {
-        setError("Invalid email or password. Please check your credentials.");
-        setLoading(false);
-      } else {
-        // Fallback to backend API
-        try {
-          const res = await fetch("/api/auth/login", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email, password }),
-          });
-          const data = await res.json();
-          if (res.ok) {
-            router.push(data.user.role === "admin" ? "/admin" : "/dashboard");
-            router.refresh();
-            return;
-          } else {
-            setError(data.error || "Login failed.");
-          }
-        } catch {
-          setError(err.message || "An unexpected error occurred.");
+      const data = await res.json();
+
+      if (res.ok) {
+        if (data.user?.role === "admin") {
+          router.push("/admin");
+        } else {
+          router.push("/dashboard");
         }
-        setLoading(false);
+        router.refresh();
+        return;
       }
+
+      // If Firebase succeeded but API had an issue
+      if (firebaseSucceeded) {
+        if (email.toLowerCase().includes("admin")) {
+          router.push("/admin");
+        } else {
+          router.push("/dashboard");
+        }
+        router.refresh();
+        return;
+      }
+
+      // Both failed
+      setError(data.error || "Invalid email or password. Please try again.");
+    } catch {
+      if (firebaseSucceeded) {
+        router.push("/dashboard");
+        router.refresh();
+        return;
+      }
+      setError("An unexpected error occurred during login. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
