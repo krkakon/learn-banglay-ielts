@@ -1,17 +1,16 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { 
-  Maximize2, 
-  ShieldCheck, 
   Film, 
   ExternalLink, 
   Loader2, 
-  Smartphone,
   Play,
-  X,
-  Tv,
-  HelpCircle
+  HelpCircle,
+  Sparkles,
+  CheckCircle2,
+  Maximize2,
+  RotateCw
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -89,20 +88,28 @@ export function parseVideoUrl(rawUrl?: string): {
 
 export function VideoPlayer({ url, title, poster }: VideoPlayerProps) {
   const [loading, setLoading] = useState(true);
-  const [cinemaMode, setCinemaMode] = useState(false);
+  const [playerMode, setPlayerMode] = useState<"gdrive" | "youtubeDemo">("gdrive");
   const containerRef = useRef<HTMLDivElement>(null);
-  const { type, embedUrl, rawDriveUrl } = parseVideoUrl(url);
+  
+  const parsed = parseVideoUrl(url);
 
-  // Close cinema mode on Escape key
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setCinemaMode(false);
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
+  // If user toggles YouTube demo mode to compare
+  const isActualYoutube = parsed.type === "youtube";
+  const currentEmbedUrl = playerMode === "youtubeDemo" 
+    ? "https://www.youtube.com/embed/S2C_S78xVjM?autoplay=0&rel=0&modestbranding=1&playsinline=1"
+    : parsed.embedUrl;
 
-  if (type === "empty" || !embedUrl) {
+  const handleFullscreen = () => {
+    if (containerRef.current) {
+      if (containerRef.current.requestFullscreen) {
+        containerRef.current.requestFullscreen();
+      } else if ((containerRef.current as any).webkitRequestFullscreen) {
+        (containerRef.current as any).webkitRequestFullscreen();
+      }
+    }
+  };
+
+  if (parsed.type === "empty" || !parsed.embedUrl) {
     return (
       <div className="relative w-full aspect-video rounded-xl sm:rounded-2xl bg-gradient-to-b from-slate-900 to-slate-950 border border-slate-800 flex flex-col items-center justify-center p-6 text-center text-slate-400 shadow-xl overflow-hidden">
         <div className="h-14 w-14 rounded-full bg-slate-800/80 flex items-center justify-center mb-3 text-slate-500 shadow-inner">
@@ -118,151 +125,138 @@ export function VideoPlayer({ url, title, poster }: VideoPlayerProps) {
 
   return (
     <div className="space-y-3">
-      {/* Top Meta Strip */}
-      <div className="flex items-center justify-between text-xs px-1">
-        <div className="flex items-center gap-2">
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-primary/10 text-primary border border-primary/20">
-            <ShieldCheck className="h-3 w-3" />
-            {type === "gdrive" ? "Google Drive HD" : type === "youtube" ? "YouTube Stream" : "Private Stream"}
-          </span>
-          <span className="text-muted-foreground text-[11px] hidden xs:inline">1080p Stream</span>
+      {/* Top Player Switcher Strip (Only shown when original link is Google Drive, allowing direct comparison) */}
+      {!isActualYoutube && (
+        <div className="flex flex-col xs:flex-row items-start xs:items-center justify-between gap-2 p-2 bg-muted/60 rounded-xl border border-border">
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <button
+              onClick={() => {
+                setPlayerMode("gdrive");
+                setLoading(true);
+              }}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                playerMode === "gdrive"
+                  ? "bg-primary text-white shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              Google Drive Stream
+            </button>
+            <button
+              onClick={() => {
+                setPlayerMode("youtubeDemo");
+                setLoading(true);
+              }}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1 ${
+                playerMode === "youtubeDemo"
+                  ? "bg-red-600 text-white shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <Sparkles className="h-3 w-3" />
+              Test YouTube Player (Smooth & No Popup)
+            </button>
+          </div>
+
+          {parsed.rawDriveUrl && (
+            <a
+              href={parsed.rawDriveUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-[11px] font-semibold text-primary hover:underline self-end xs:self-auto"
+            >
+              <ExternalLink className="h-3 w-3" />
+              Drive App
+            </a>
+          )}
         </div>
+      )}
 
-        {rawDriveUrl && (
-          <a
-            href={rawDriveUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 text-[11px] font-semibold text-primary hover:underline"
-          >
-            <ExternalLink className="h-3 w-3" />
-            Open in Drive App
-          </a>
-        )}
-      </div>
-
-      {/* Responsive 16:9 Video Player Container (True 16:9 prevents internal black letterboxes) */}
+      {/* Responsive Video Container (Strict 16:9 Widescreen Ratio prevents stretching) */}
       <div 
         ref={containerRef}
         className="relative w-full aspect-video rounded-xl sm:rounded-2xl overflow-hidden bg-black shadow-2xl border border-slate-800 ring-1 ring-white/10"
       >
-        {/* Shimmer Loading Skeleton */}
+        {/* Loading Spinner */}
         {loading && (
           <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-slate-950 text-slate-400 pointer-events-none">
             <Loader2 className="h-8 w-8 text-primary animate-spin mb-2" />
-            <p className="text-xs font-medium text-slate-300">Connecting Video Stream...</p>
+            <p className="text-xs font-medium text-slate-300">Loading Video Player...</p>
           </div>
         )}
 
         {/* Video Embed */}
-        {(type === "gdrive" || type === "youtube" || type === "vimeo") ? (
-          <iframe
-            src={embedUrl}
-            title={title || "IELTS Course Video"}
-            className="w-full h-full border-0 absolute inset-0 block"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
-            allowFullScreen
-            loading="eager"
-            onLoad={() => setLoading(false)}
-          />
-        ) : (
-          <video
-            src={embedUrl}
-            controls
-            playsInline
-            controlsList="nodownload"
-            poster={poster}
-            className="w-full h-full object-contain"
-            onLoadedData={() => setLoading(false)}
-          >
-            Your browser does not support the video tag.
-          </video>
-        )}
+        <iframe
+          key={currentEmbedUrl}
+          src={currentEmbedUrl}
+          title={title || "IELTS Course Video"}
+          className="w-full h-full border-0 absolute inset-0 block"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
+          allowFullScreen
+          loading="eager"
+          onLoad={() => setLoading(false)}
+        />
       </div>
 
-      {/* Prominent Mobile Control & Cinema Bar */}
-      <div className="space-y-2">
-        <div className="grid grid-cols-2 gap-2">
-          {/* Cinema Fullscreen Button */}
-          <Button
-            type="button"
-            onClick={() => setCinemaMode(true)}
-            className="w-full h-10 bg-primary hover:bg-primary/90 text-white font-semibold text-xs sm:text-sm flex items-center justify-center gap-1.5 shadow-md shadow-primary/20"
-          >
-            <Maximize2 className="h-4 w-4" />
-            ⛶ Cinema Fullscreen
-          </Button>
+      {/* Mobile Actions Bar */}
+      {playerMode === "gdrive" ? (
+        <div className="space-y-2.5">
+          {/* Quick Action Buttons */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            {parsed.rawDriveUrl && (
+              <a
+                href={parsed.rawDriveUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="h-10 rounded-xl bg-primary hover:bg-primary/90 text-white font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md shadow-primary/20 transition-colors"
+              >
+                <Play className="h-3.5 w-3.5 fill-current" />
+                Watch in Google Drive App (Native 1080p)
+              </a>
+            )}
 
-          {/* Watch in Drive App Button */}
-          {rawDriveUrl ? (
-            <a
-              href={rawDriveUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full h-10 rounded-lg border border-primary/30 bg-primary/5 hover:bg-primary/10 text-primary font-semibold text-xs sm:text-sm flex items-center justify-center gap-1.5 transition-colors"
-            >
-              <ExternalLink className="h-4 w-4" />
-              Watch in Drive App
-            </a>
-          ) : (
             <Button
               type="button"
               variant="outline"
-              onClick={() => {
-                if (containerRef.current?.requestFullscreen) {
-                  containerRef.current.requestFullscreen();
-                }
-              }}
-              className="w-full h-10 text-xs sm:text-sm"
+              onClick={handleFullscreen}
+              className="h-10 rounded-xl text-xs sm:text-sm font-semibold flex items-center justify-center gap-1.5"
             >
-              <Tv className="h-4 w-4 mr-1.5" /> Fullscreen
+              <Maximize2 className="h-3.5 w-3.5" />
+              Maximize Fullscreen
             </Button>
-          )}
-        </div>
-
-        {/* Clear Touch Control Guide for Students */}
-        <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-3 text-xs space-y-1.5 text-amber-900 dark:text-amber-200">
-          <div className="flex items-center gap-1.5 font-bold text-amber-800 dark:text-amber-300">
-            <HelpCircle className="h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400" />
-            <span>মোবাইলে সহজে ভিডিও কন্ট্রোল করার নিয়ম (Mobile Controls Guide):</span>
-          </div>
-          <ul className="list-disc list-inside space-y-1 text-[11px] sm:text-xs text-muted-foreground leading-relaxed pl-1">
-            <li><strong>প্লে / পজ করতে:</strong> ভিডিও স্ক্রিনে যেকোনো জায়গায় একবার টাচ করুন (Tap on video to Play/Pause).</li>
-            <li><strong>ক্লিয়ার ফুলস্ক্রিন দেখতে:</strong> উপরের লাল <strong>&quot;Cinema Fullscreen&quot;</strong> বাটনে চাপ দিন অথবা ফোনটি আড়াআড়ি (Landscape) ঘুরিয়ে নিন।</li>
-            <li><strong>স্পিড বাড়াতে বা ফাস্ট দেখতে:</strong> <strong>&quot;Watch in Drive App&quot;</strong> বাটনে চাপলে সরাসরি গুগল ড্রাইভে ফুল এইচডিতে ওপেন হবে।</li>
-          </ul>
-        </div>
-      </div>
-
-      {/* Dedicated Cinema Mode Modal (Full Viewport for Mobile Phones) */}
-      {cinemaMode && (
-        <div className="fixed inset-0 z-50 bg-black flex flex-col animate-in fade-in">
-          {/* Header Bar */}
-          <div className="h-12 flex items-center justify-between px-4 bg-slate-950 border-b border-slate-800 text-white z-20 shrink-0">
-            <div className="flex items-center gap-2 truncate pr-2">
-              <span className="h-2 w-2 rounded-full bg-red-500 animate-pulse shrink-0" />
-              <span className="text-xs sm:text-sm font-bold truncate">{title || "IELTS Video Lecture"}</span>
-            </div>
-            <button
-              onClick={() => setCinemaMode(false)}
-              className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs font-bold transition-colors flex items-center gap-1 shrink-0"
-            >
-              <X className="h-4 w-4" />
-              Close Cinema View
-            </button>
           </div>
 
-          {/* Fullscreen Video Body (Locked to 16:9 so Google Drive does not render oversized vertical controls) */}
-          <div className="flex-1 w-full flex items-center justify-center p-0 sm:p-4 bg-black overflow-hidden">
-            <div className="w-full max-w-5xl aspect-video relative bg-black shadow-2xl">
-              <iframe
-                src={embedUrl}
-                title={title || "IELTS Course Video"}
-                className="w-full h-full border-0 absolute inset-0 block"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
-                allowFullScreen
-              />
+          {/* Explanation Box for Google Drive Mobile Embed Quirks */}
+          <div className="bg-muted/40 border border-border rounded-xl p-3.5 text-xs space-y-2">
+            <div className="flex items-center gap-1.5 font-bold text-foreground">
+              <HelpCircle className="h-4 w-4 text-primary shrink-0" />
+              <span>মোবাইলে ভিডিও দেখার সেরা উপায় (Important Notice):</span>
             </div>
+            
+            <ul className="list-disc list-inside space-y-1.5 text-[11px] sm:text-xs text-muted-foreground leading-relaxed pl-1">
+              <li>
+                <strong>কেন ৪:৪৬ পপ-আপ আটকে থাকে?</strong> গুগল ড্রাইভের ওয়েব প্লেয়ার মাউস ব্যবহারের জন্য তৈরি। মোবাইলে টাইমলাইনে আঙুল স্পর্শ করলে প্রিভিউ পপ-আপ আসে এবং মাউস কার্সার না থাকায় তা আটকে থাকে।
+              </li>
+              <li>
+                <strong>মাখনের মতো স্মুথলি দেখতে:</strong> উপরের <strong className="text-foreground">&quot;Watch in Google Drive App&quot;</strong> বাটনে চাপ দিন — সরাসরি ফোনে ইন্সটল থাকা গুগল ড্রাইভ অ্যাপে ফুল এইচডিতে ওপেন হবে যেখানে কোনো পপআপ বা বাটন বাধার সৃষ্টি করবে না।
+              </li>
+              <li>
+                <strong>স্ক্রিন বড় করতে:</strong> ফোনটি আড়াআড়ি (Landscape) ঘুরিয়ে নিন অথবা <strong className="text-foreground">&quot;Maximize Fullscreen&quot;</strong> বাটনে চাপ দিন।
+              </li>
+              <li>
+                <strong>ইউটিউব প্লেয়ার টেস্ট:</strong> উপরে লাল <strong className="text-red-500">&quot;Test YouTube Player&quot;</strong> বাটনে ট্যাপ করে দেখুন ইউটিউবে ভিডিও প্লেয়ার কতটা প্রিমিয়াম ও স্মুথ কাজ করে।
+              </li>
+            </ul>
+          </div>
+        </div>
+      ) : (
+        <div className="bg-green-500/10 border border-green-500/20 rounded-xl p-3.5 text-xs flex items-center gap-2.5 text-green-900 dark:text-green-200">
+          <CheckCircle2 className="h-5 w-5 text-green-600 shrink-0" />
+          <div className="space-y-0.5">
+            <strong className="text-green-800 dark:text-green-300 block">ইউটিউব প্লেয়ারের সুবিধা (YouTube Unlisted Mode):</strong>
+            <p className="text-[11px] sm:text-xs text-green-700 dark:text-green-300/80 leading-relaxed">
+              মোবাইল ফোনে কোনো টাইমলাইন পপআপ আটকে থাকে না, স্ক্রিনে ট্যাপের ২ সেকেন্ড পর সকল কন্ট্রোল নিজে থেকেই লুকিয়ে যায়, ১০ সেকেন্ড ডাবল-ট্যাপ স্কিপ কাজ করে এবং বাফারিং ছাড়া মাখনের মতো চলে!
+            </p>
           </div>
         </div>
       )}
