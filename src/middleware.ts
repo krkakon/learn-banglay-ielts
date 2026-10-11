@@ -6,8 +6,8 @@ const protectedAdminRoutes = ["/admin"];
 
 export async function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname;
-  const isStudentRoute = protectedStudentRoutes.some((route) => path.startsWith(route));
-  const isAdminRoute = protectedAdminRoutes.some((route) => path.startsWith(route));
+  const isStudentRoute = protectedStudentRoutes.some((route) => path === route || path.startsWith(route + "/"));
+  const isAdminRoute = (path === "/admin" || path.startsWith("/admin/")) && !path.startsWith("/admin-login");
 
   if (isAdminRoute) {
     const sessionCookie = req.cookies.get("session")?.value;
