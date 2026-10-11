@@ -37,7 +37,7 @@ export const MODULES_INFO: Record<string, ModuleInfo> = {
     id: "reading",
     name: "IELTS Reading",
     banglaName: "রিডিং প্রস্তুতি",
-    description: "Master Skimming & Scanning, True/False/Not Given, Heading Matching, and time management strategies for 60 minutes.",
+    description: "Master Skimming & Scanning, True/False/Not Given, Gap Fills, and time management strategies for 60 minutes.",
     color: "bg-green-500",
     badgeColor: "text-green-500 bg-green-50",
     href: "/reading",
@@ -63,14 +63,78 @@ export const MODULES_INFO: Record<string, ModuleInfo> = {
 };
 
 /**
- * Initial course lessons catalog.
- * When the user shares Google Drive links, simply add or update the entries here!
+ * Course lessons catalog with Google Drive stream video integration.
  */
 export const initialLessons: Lesson[] = [
-  // Listening Lessons (ready to be populated)
-  // Reading Lessons (ready to be populated)
-  // Writing Lessons (ready to be populated)
-  // Speaking Lessons (ready to be populated)
+  // ==================== IELTS READING MODULE ====================
+  {
+    id: "reading-01",
+    moduleId: "reading",
+    moduleName: "IELTS Reading",
+    order: 1,
+    title: "Nutmeg Gap Fill",
+    banglaTitle: "নাটমেগ প্যাসেজ গ্যাপ ফিলিং স্ট্র্যাটেজি",
+    description: "Detailed walkthrough of the famous Cambridge IELTS 'The Nutmeg Tree' reading passage. Learn how to locate keywords, identify word limits, and solve summary gap-fill questions accurately.",
+    videoUrl: "https://drive.google.com/file/d/1oTv3XK78KudsrkclG3WowGVco-ys11UQ/view?usp=sharing",
+    duration: "22:40",
+    completed: false,
+    keyPoints: [
+      "Locating keywords and synonyms in Cambridge passage text",
+      "Grammar prediction before filling the gaps (noun, verb, adjective)",
+      "Avoiding common traps and strictly adhering to word count limits",
+    ],
+  },
+  {
+    id: "reading-02",
+    moduleId: "reading",
+    moduleName: "IELTS Reading",
+    order: 2,
+    title: "Gap Fill Tips & Tricks",
+    banglaTitle: "গ্যাপ ফিল শর্টকাট টিপস ও ট্রিকস",
+    description: "Master proven strategies and shortcuts for IELTS Reading Gap Fill questions. Learn how to skim effectively, track chronological order in passages, and never lose easy marks.",
+    videoUrl: "https://drive.google.com/file/d/1CW_sa-lQrvz_RzEJJOXTmwPct9ALA4Jo/view?usp=sharing",
+    duration: "18:15",
+    completed: false,
+    keyPoints: [
+      "Chronological flow vs. scrambled sentence completion",
+      "Synonym mapping and paraphrasing identification",
+      "Fast skimming techniques to save critical exam minutes",
+    ],
+  },
+  {
+    id: "reading-03",
+    moduleId: "reading",
+    moduleName: "IELTS Reading",
+    order: 3,
+    title: "Gap Fill Hard Passage Analysis",
+    banglaTitle: "কঠিন প্যাসেজ অ্যানালাইসিস ও সলভিং মেথড",
+    description: "In-depth breakdown of complex, high-difficulty academic reading passages with dense vocabulary, abstract concepts, and subtle answer placement.",
+    videoUrl: "", // Pending URL from user
+    duration: "20:00",
+    completed: false,
+    keyPoints: [
+      "Handling unfamiliar scientific and historical terminology",
+      "Analyzing context clues around blank spaces",
+      "Double-checking answers against grammatical coherence",
+    ],
+  },
+  {
+    id: "reading-04",
+    moduleId: "reading",
+    moduleName: "IELTS Reading",
+    order: 4,
+    title: "What Need to Write First",
+    banglaTitle: "পরীক্ষার হলে কোন প্রশ্ন আগে অ্যান্সার করবেন",
+    description: "Essential exam-day strategy and question sequence prioritization. Understand which questions to tackle first to maximize your score within the strict 60-minute limit.",
+    videoUrl: "https://drive.google.com/file/d/1AU9e82TNcgTsbxBu6DKKOJ-Mq3LwTldc/view?usp=sharing",
+    duration: "16:50",
+    completed: false,
+    keyPoints: [
+      "Time allocation formula for 3 reading passages (15-20-25 rule)",
+      "Strategic order: Which question types to answer first vs. last",
+      "Direct answer sheet transfer habits to prevent missed answers",
+    ],
+  },
 ];
 
 export function getLessonsByModule(moduleId: string): Lesson[] {
