@@ -33,6 +33,8 @@ export async function POST(req: Request) {
         email,
         phone,
         password_hash: hashedPassword,
+        account_status: "active",
+        enrollment_status: "approved",
       },
     });
 

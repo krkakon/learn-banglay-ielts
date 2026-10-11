@@ -11,9 +11,24 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Invalid email or password. Please try again." }, { status: 400 });
     }
 
-    const user = await prisma.user.findUnique({
+    let user = await prisma.user.findUnique({
       where: { email },
     });
+
+    // Auto-seed admin user on first login if not yet created
+    if (!user && email.toLowerCase() === "admin@learnbanglayielts.com" && password === "admin123") {
+      const adminPassword = await bcrypt.hash("admin123", 10);
+      user = await prisma.user.create({
+        data: {
+          email: "admin@learnbanglayielts.com",
+          full_name: "Admin User",
+          password_hash: adminPassword,
+          role: "admin",
+          account_status: "active",
+          enrollment_status: "approved",
+        },
+      });
+    }
 
     if (!user) {
       return NextResponse.json({ error: "Invalid email or password. Please try again." }, { status: 401 });
