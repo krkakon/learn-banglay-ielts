@@ -1,12 +1,21 @@
 import { CourseList } from "@/components/course/CourseList";
+import { getLessonsByModule, MODULES_INFO } from "@/lib/coursesData";
 
 export default function WritingPage() {
-  const lessons: Array<{ id: string; title: string; duration: string; completed: boolean; order: number }> = [];
+  const lessons = getLessonsByModule("writing").map((l) => ({
+    id: l.id,
+    title: l.title,
+    duration: l.duration,
+    completed: l.completed || false,
+    order: l.order,
+  }));
+
+  const info = MODULES_INFO.writing;
 
   return (
     <CourseList 
-      title="IELTS Writing" 
-      description="Learn the perfect essay structure, advanced vocabulary, and grammar rules for a high band score."
+      title={info.name} 
+      description={info.description}
       lessons={lessons} 
     />
   );

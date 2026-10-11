@@ -1,12 +1,21 @@
 import { CourseList } from "@/components/course/CourseList";
+import { getLessonsByModule, MODULES_INFO } from "@/lib/coursesData";
 
 export default function ReadingPage() {
-  const lessons: Array<{ id: string; title: string; duration: string; completed: boolean; order: number }> = [];
+  const lessons = getLessonsByModule("reading").map((l) => ({
+    id: l.id,
+    title: l.title,
+    duration: l.duration,
+    completed: l.completed || false,
+    order: l.order,
+  }));
+
+  const info = MODULES_INFO.reading;
 
   return (
     <CourseList 
-      title="IELTS Reading" 
-      description="Improve your reading speed, comprehension, and accuracy for Academic and General Training."
+      title={info.name} 
+      description={info.description}
       lessons={lessons} 
     />
   );

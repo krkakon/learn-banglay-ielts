@@ -1,12 +1,21 @@
 import { CourseList } from "@/components/course/CourseList";
+import { getLessonsByModule, MODULES_INFO } from "@/lib/coursesData";
 
 export default function ListeningPage() {
-  const lessons: Array<{ id: string; title: string; duration: string; completed: boolean; order: number }> = [];
+  const lessons = getLessonsByModule("listening").map((l) => ({
+    id: l.id,
+    title: l.title,
+    duration: l.duration,
+    completed: l.completed || false,
+    order: l.order,
+  }));
+
+  const info = MODULES_INFO.listening;
 
   return (
     <CourseList 
-      title="IELTS Listening" 
-      description="Master the IELTS Listening module with comprehensive strategies, question breakdowns, and practice techniques."
+      title={info.name} 
+      description={info.description}
       lessons={lessons} 
     />
   );

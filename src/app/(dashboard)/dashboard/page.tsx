@@ -4,18 +4,14 @@ import { Headphones, BookOpen, PenTool, Mic, FileText, PlayCircle } from "lucide
 import Link from "next/link";
 import { cookies } from "next/headers";
 import { decrypt } from "@/lib/auth";
+import { getModuleStats } from "@/lib/coursesData";
 
 export default async function DashboardPage() {
   const sessionCookie = (await cookies()).get("session")?.value;
   const session = await decrypt(sessionCookie);
 
-  // Progress data (reset to 0 so admin can add new lessons)
-  const progressData = {
-    listening: { total: 0, completed: 0, percentage: 0 },
-    reading: { total: 0, completed: 0, percentage: 0 },
-    writing: { total: 0, completed: 0, percentage: 0 },
-    speaking: { total: 0, completed: 0, percentage: 0 },
-  };
+  // Dynamic progress data calculated from active curriculum
+  const progressData = getModuleStats();
 
   const modules = [
     { title: "IELTS Listening", href: "/listening", icon: Headphones, data: progressData.listening, color: "bg-blue-500" },
