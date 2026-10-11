@@ -124,7 +124,7 @@ export default function DashboardLayout({
           <div className="w-6" /> {/* Spacer */}
         </header>
 
-        <main className="flex-1 p-4 sm:p-6 lg:p-8">
+        <main className="flex-1 p-2.5 sm:p-6 lg:p-8">
           {children}
         </main>
       </div>
